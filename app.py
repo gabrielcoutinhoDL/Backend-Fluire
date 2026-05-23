@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, redirect, request
+from flask import Flask
 from flask_cors import CORS
 
 #As rotas ficam aqui
@@ -11,7 +11,7 @@ CORS(app)
 
 #Inicianlizando as rotas
 #init_usuario_routes(app)
-#Fim das rotas
+#Fim da inicialização das rotas
 
 if __name__ == 'main':
     app.run(debug=True)
