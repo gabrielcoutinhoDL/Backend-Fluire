@@ -1,11 +1,11 @@
 import pymysql
-from pymysql.cursors import DictCursor
 
 def get_connection():
+
     return pymysql.connect(
         host='localhost',
         user='root',
-        passwd='a senha',
-        database='o banco',
-        cursorclass=DictCursor
+        password='5437897543',
+        database='fluire',
+        cursorclass=pymysql.cursors.DictCursor
     )
