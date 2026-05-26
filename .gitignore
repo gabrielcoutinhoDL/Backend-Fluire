@@ -18,7 +18,7 @@ dist/
 build/
 
 # Database
-/config
+config/database.py
 
 # Logs
 *.log
