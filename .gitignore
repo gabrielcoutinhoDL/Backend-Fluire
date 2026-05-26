@@ -22,6 +22,7 @@ build/
 *.sqlite3
 *.db
 
+
 # Logs
 *.log
 logs/
@@ -36,3 +37,6 @@ upload/documentos/*
 *.swp
 *.swo
 .DS_Store
+
+# Ignore the .env file containing sensitive information
+.env    
