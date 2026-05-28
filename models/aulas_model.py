@@ -103,7 +103,7 @@ class AulasModel:
         
         finally:
             connection.close()
-                 
+         
     
     def deletar_aula(id):
         connection = get_connection()
