@@ -1,3 +1,4 @@
+
 from flask import request, jsonify
 from models.aulas_model import *
 

@@ -20,6 +20,7 @@ build/
 # Database
 config/database.py
 
+
 # Logs
 *.log
 logs/
@@ -34,3 +35,6 @@ upload/documentos/*
 *.swp
 *.swo
 .DS_Store
+
+# Ignore the .env file containing sensitive information
+.env    
