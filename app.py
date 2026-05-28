@@ -3,11 +3,10 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from flask_mail import Mail
 
-
-from routes.usuarios_routes import usuarios_bp
 from routes.aulas_routes import *
 from routes.alunos_routes import *
 from routes.frequencias_routes import frequencia_bp
+from routes.usuarios_routes import usuarios_bp
 
 load_dotenv()
 
