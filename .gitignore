@@ -18,9 +18,8 @@ dist/
 build/
 
 # Database
-*.sqlite
-*.sqlite3
-*.db
+config/database.py
+
 
 # Logs
 *.log
@@ -36,3 +35,6 @@ upload/documentos/*
 *.swp
 *.swo
 .DS_Store
+
+# Ignore the .env file containing sensitive information
+.env    
