@@ -1,6 +1,10 @@
 from flask import request, jsonify
+from flask_jwt_extended import create_access_token
 from models.usuarios_model import criar_usuario, buscar_usuario_nome, atualizar_usuario, deletar_usuario
+import os
 import bcrypt
+import jwt
+from config.database import get_connection
 
 
 def criar_usuario_controller():
@@ -10,6 +14,7 @@ def criar_usuario_controller():
     email = dados.get("email")
     senha = dados.get("senha")
 
+    
     # validações
     if not nome:
         return jsonify({
@@ -38,7 +43,9 @@ def criar_usuario_controller():
         return jsonify({
             "erro": str(e)
         }), 400
-        
+
+
+       
 def buscar_usuario_nome_controller(nome):
     usuario = buscar_usuario_nome(nome)
 
@@ -103,3 +110,38 @@ def deletar_usuario_controller(id):
         return jsonify({
             "erro": str(e)
         }), 400
+        
+        
+def login_usuario_controller():
+    dados = request.json
+
+    email = dados.get("email")
+    senha = dados.get("senha")
+
+    connection = get_connection()
+    cursor = connection.cursor()
+    
+    sql = """SELECT * FROM usuarios WHERE email = %s"""
+    try:
+        cursor.execute(sql, (email,))
+        usuario = cursor.fetchone()
+
+        if usuario:
+            if bcrypt.checkpw(senha.encode('utf-8'), usuario['senha'].encode('utf-8')):
+                token = create_access_token(identity=usuario['id'])
+                
+                response = {"mensagem": "Login bem-sucedido", "usuario": {
+                    "id": usuario['id'],
+                    "nome": usuario['nome'],
+                    "email": usuario['email'] 
+                }, "token": token}
+                
+                return jsonify(response), 200
+            else:
+                return jsonify({"erro": "Senha incorreta"}), 401
+            
+    except Exception as e:
+        return jsonify({"message": "Erro ao processar login", "erro": str(e)}), 401
+    finally:
+        connection.close()
+        

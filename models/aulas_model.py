@@ -2,7 +2,7 @@ from config.database import get_connection
 
 class AulasModel:
     
-    def criar_aula(nome, usuario_id, horario_inicio, horario_fim, frequencia=None, dia_semana=None):
+    def criar_aula(nome, usuario_id, horario_inicio, horario_fim, frequencia=None, dia_semana=None, usuario_logado_id=None):
         connection = get_connection()
 
         try:
@@ -15,11 +15,11 @@ class AulasModel:
 
                 sql = """
                     INSERT INTO aulas 
-                    (nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana)
-                    VALUES (%s, %s, %s, %s, %s, %s)
+                    (nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, created_by)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """
 
-                cursor.execute(sql, (nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana))
+                cursor.execute(sql, (nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, usuario_logado_id))
                 connection.commit()
 
                 return cursor.lastrowid
@@ -30,6 +30,8 @@ class AulasModel:
 
         finally:
             connection.close()
+        
+            
     def buscar_todas_aulas():
         connection = get_connection()
 
@@ -54,6 +56,8 @@ class AulasModel:
                 return aulas
         finally:
             connection.close()   
+         
+            
     def buscar_aula_por_id(id):
         connection = get_connection()
 
@@ -77,17 +81,18 @@ class AulasModel:
         finally:
             connection.close() 
             
-    def atualizar_aula(id, nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana):
+          
+    def atualizar_aula(id, nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, usuario_logado_id=None):
         connection = get_connection()
         
         try:
             with connection.cursor() as cursor:
                 sql = """
                     UPDATE aulas 
-                    SET nome = %s, usuario_id = %s, horario_inicio = %s, horario_fim = %s, frequencia = %s, dia_semana = %s
+                    SET nome = %s, usuario_id = %s, horario_inicio = %s, horario_fim = %s, frequencia = %s, dia_semana = %s, updated_by = %s
                     WHERE id = %s
                 """
-                cursor.execute(sql, (nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, id))
+                cursor.execute(sql, (nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, usuario_logado_id, id))
                 if cursor.rowcount == 0:
                     raise Exception("Aula não encontrada")
                 connection.commit()
@@ -100,7 +105,9 @@ class AulasModel:
         
         finally:
             connection.close()
-    def deletar_aula(id):
+
+           
+    def deletar_aula(id, usuario_logado_id=None):
         connection = get_connection()
 
         try:
