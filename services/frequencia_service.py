@@ -1,53 +1,43 @@
-from models.frequencias_model import (
-    buscar_todas_frequencias,
-    buscar_frequencias_por_aula,
-    verificar_frequencia_existente,
-    inserir_frequencia,
-    atualizar_frequencia,
-    deletar_frequencia,
-)
+from models.frequencias_model import *
 
-
-def listar_frequencias_service():
+def todas_listar_frequencias_service():
     return buscar_todas_frequencias()
-
 
 def buscar_frequencias_aula_service(aula_id):
     return buscar_frequencias_por_aula(aula_id)
 
+def validar_presente_service(presente):
+    if presente not in [0, 1]:
+        raise Exception("Valor de 'presente' deve ser 0 (ausente) ou 1 (presente).")
 
 def registrar_frequencia_service(aula_id, aluno_id, presente, data_presenca):
-    frequencia_existente = verificar_frequencia_existente(
-        aula_id,
-        aluno_id,
-        data_presenca,
-    )
-
+    validar_presente_service(presente)
+    frequencia_existente = verificar_frequencia_existente(aula_id, aluno_id)
     if frequencia_existente:
-        atualizar_frequencia(frequencia_existente["id"], presente)
-        return {
-            "sucesso": True,
-            "mensagem": "Frequência atualizada com sucesso",
-        }
-
+        raise Exception("Frequência já registrada para este aluno nesta aula.")
+    
     inserir_frequencia(aula_id, aluno_id, presente, data_presenca)
     return {
-        "sucesso": True,
-        "mensagem": "Frequência registrada com sucesso",
+        "mensagem": "Frequência registrada com sucesso"
     }
 
-
-def atualizar_frequencia_service(id, presente):
+def atualizar_frequencia_service(id, aula_id, aluno_id, presente):
+    validar_presente_service(presente)
+    frequencia_existente = verificar_frequencia_existente(aula_id, aluno_id)
+    if not frequencia_existente:
+        raise Exception("Frequência não encontrada para este aluno nesta aula.")
+    
     atualizar_frequencia(id, presente)
     return {
-        "sucesso": True,
-        "mensagem": "Frequência atualizada com sucesso",
+        "mensagem": "Frequência atualizada com sucesso"
     }
-
-
+    
 def deletar_frequencia_service(id):
+    frequencia_existente = deletar_frequencia(id)
+    if not frequencia_existente:
+        raise Exception("Frequência não encontrada.")
+    
     deletar_frequencia(id)
     return {
-        "sucesso": True,
-        "mensagem": "Frequência removida com sucesso",
+        "mensagem": "Frequência deletada com sucesso"
     }

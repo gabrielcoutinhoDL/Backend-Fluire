@@ -1,74 +1,112 @@
 from config.database import get_connection
 
 class DashboardService:
-    
-    @staticmethod
     def get_dashboard():
-        
-        ConnectDB = get_connection()
-        
         try:
-            
-            with ConnectDB.cursor() as cursor:
-                
-                #total presença
-                cursor.execute("SELECT COUNT(*) AS total FROM frequencias WHERE presentes = 1 AND DATE(data_presenca) = CURDATE()")
-                alunos_presentes = cursor.fetchone()["total"]
-                
-                #total aulas
-                cursor.execute ("SELECT COUNT(*) AS total FROM aulas")
-                aulas_hoje = cursor.fetchone()["total"]
-                
-                #freq. média
-                cursor.execute ("SELECT SUM(presencas) AS presencas, SUM(faltas) AS faltas FROM alunos")
-                dados = cursor.fetchone()
-                
-                total_presencas = dados["presencas"] or 0
-                total_faltas = dados["faltas"] or 0
-                
-                total = total_presencas + total_faltas 
-                
-                frequencia_media = 0
-                
-                if total > 0:
-                    frequencia_media = round(
-                        (total_presencas / total) * 100
-                    )
-                
-                #lista aulas
-                
-                cursor.execute("""
-                    SELECT
-                        id,
-                        nome,
-                        usuario_id,
-                        horario_inicio,
-                        horario_fim,
-                        frequencia
-                    FROM aulas
-                """)
-                
-                aulas = cursor.fetchall()
-                
-                return {
-                    "alunos_presentes": alunos_presentes,
-                    "aulas_hoje": aulas_hoje,                    
-                    "em_andamento": 0,
-                    "frequencia_media": frequencia_media,
-                    "today_classes": [
-                        
-                        {
-                            "id": aula["id"],
-                            "title": aula["nome"],
-                            "teacher": f"Professor #{aula['usuario_id']}",
-                            "time": f"{aula['horario_inicio']} - {aula['horario_fim']}",
-                            "students": str(aula["frequencia"]),
-                            "status": "ativa"
-                        }
-                        
-                        for aula in aulas
-                    ]
-                }
-                
-        finally:
-            ConnectDB.close()
+            total_alunos = DashboardService.get_total_alunos()
+            total_aulas = DashboardService.get_total_aulas()
+            media_frequencia = DashboardService.get_media_frequencia()
+            proximas_aulas = DashboardService.get_proximas_aulas()
+            total_alunos_com_falta = DashboardService.get_total_alunos_com_falta()
+
+            dashboard_data = {
+                "total_alunos": total_alunos,
+                "total_aulas": total_aulas,
+                "media_frequencia": media_frequencia,
+                "proximas_aulas": proximas_aulas,
+                "total_alunos_com_falta": total_alunos_com_falta
+            }
+
+            return dashboard_data
+        except Exception as e:
+            raise Exception(f"Erro ao obter dados do dashboard: {str(e)}")
+    
+    def get_proximas_aulas():
+        try:
+            connection = get_connection()
+            cursor = connection.cursor()
+
+            # Consulta para obter as próximas aulas
+            cursor.execute("SELECT * FROM aulas WHERE data_hora > NOW() ORDER BY data_hora ASC LIMIT 5")
+            proximas_aulas = cursor.fetchall()
+
+            # Fechar a conexão com o banco de dados
+            cursor.close()
+            connection.close()
+
+            return proximas_aulas
+        except Exception as e:
+            raise Exception(f"Erro ao obter próximas aulas: {str(e)}")
+
+
+    def get_media_frequencia():
+        try:
+            connection = get_connection()
+            cursor = connection.cursor()
+
+            # Consulta para calcular a média de frequência dos alunos
+            cursor.execute("SELECT AVG(CASE WHEN presente = TRUE THEN 1 ELSE 0 END) FROM aula_alunos")
+            media_frequencia = cursor.fetchone()[0]
+
+            # Fechar a conexão com o banco de dados
+            cursor.close()
+            connection.close()
+
+            return media_frequencia
+        except Exception as e:
+            raise Exception(f"Erro ao calcular média de frequência: {str(e)}")
+
+
+    def get_total_alunos():
+        try:
+            connection = get_connection()
+            cursor = connection.cursor()
+
+            # Consulta para obter o número total de alunos
+            cursor.execute("SELECT COUNT(*) FROM alunos")
+            total_alunos = cursor.fetchone()[0]
+
+            # Fechar a conexão com o banco de dados
+            cursor.close()
+            connection.close()
+
+            return total_alunos
+        except Exception as e:
+            raise Exception(f"Erro ao obter total de alunos: {str(e)}")
+        
+    
+    def get_total_aulas():
+        try:
+            connection = get_connection()
+            cursor = connection.cursor()
+
+            # Consulta para obter o número total de aulas
+            cursor.execute("SELECT COUNT(*) FROM aulas")
+            total_aulas = cursor.fetchone()[0]
+
+            # Fechar a conexão com o banco de dados
+            cursor.close()
+            connection.close()
+
+            return total_aulas
+        except Exception as e:
+            raise Exception(f"Erro ao obter total de aulas: {str(e)}")
+        
+    
+# Consulta para obter para total de alunos com falta
+    def get_total_alunos_com_falta():
+        try:
+            connection = get_connection()
+            cursor = connection.cursor()
+
+            # Consulta para obter o número total de alunos com falta
+            cursor.execute("SELECT COUNT(*) FROM aula_alunos WHERE presente = FALSE")
+            total_associacoes = cursor.fetchone()[0]     
+
+            # Fechar a conexão com o banco de dados
+            cursor.close()
+            connection.close()
+
+            return total_associacoes
+        except Exception as e:
+            raise Exception(f"Erro ao obter total de alunos com falta: {str(e)}")
