@@ -1,10 +1,12 @@
-from flask import request, jsonify
+from flask import request, jsonify, current_app
 from flask_jwt_extended import create_access_token
-from models.usuarios_model import criar_usuario, buscar_usuario_nome, atualizar_usuario, deletar_usuario
+from models.usuario_model import UsuarioModel
 import os
 import bcrypt
 import jwt
 from config.database import get_connection
+from flask_mail import Message
+import random
 
 
 def criar_usuario_controller():
@@ -34,7 +36,7 @@ def criar_usuario_controller():
     senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt())
 
     try:
-        usuario_id = criar_usuario(nome, email, senha_hash)
+        usuario_id = UsuarioModel.criar_usuario(nome, email, senha_hash)
         return jsonify({
             "mensagem": "Usuário criado com sucesso",
             "id": usuario_id
@@ -47,7 +49,7 @@ def criar_usuario_controller():
 
        
 def buscar_usuario_nome_controller(nome):
-    usuario = buscar_usuario_nome(nome)
+    usuario = UsuarioModel.buscar_usuario_nome(nome)
 
     if not usuario:
         return jsonify({
@@ -81,7 +83,7 @@ def atualizar_usuario_controller(id):
     senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt())
 
     try:
-        sucesso = atualizar_usuario(id, nome, email, senha_hash)
+        sucesso = UsuarioModel.atualizar_usuario(id, nome, email, senha_hash)
         if sucesso:
             return jsonify({
                 "mensagem": "Usuário atualizado com sucesso"
@@ -97,7 +99,7 @@ def atualizar_usuario_controller(id):
 
 def deletar_usuario_controller(id):
     try:
-        sucesso = deletar_usuario(id)
+        sucesso = UsuarioModel.deletar_usuario(id)
         if sucesso:
             return jsonify({
                 "mensagem": "Usuário deletado com sucesso"
@@ -144,4 +146,45 @@ def login_usuario_controller():
         return jsonify({"message": "Erro ao processar login", "erro": str(e)}), 401
     finally:
         connection.close()
-        
+    
+    #recuperar senha
+
+def recuperar_senha_controller():
+    dados = request.json
+    email = dados.get("email")
+
+    if not email:
+        return jsonify({
+            "erro": "Email é obrigatório"
+        }), 400
+
+    # Verificar se o email existe no banco
+    usuario = UsuarioModel.buscar_usuario_email(email)
+
+    if not usuario:
+        return jsonify({
+            "erro": "Email não encontrado"
+        }), 404
+
+    # Gerar código aleatório de 6 dígitos
+    codigo = random.randint(100000, 999999)
+
+    try:
+        msg = Message(
+            "Recuperacao de senha",
+            recipients=[email]
+        )
+
+        msg.body = f"O seu código de recuperação é: {codigo}"
+
+        current_app.extensions['mail'].send(msg)
+
+        return jsonify({
+            "mensagem": "Codigo enviado com sucesso"
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "erro": "Erro ao enviar email",
+            "detalhes": str(e)
+        }), 500
