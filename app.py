@@ -6,7 +6,7 @@ from extensions.jwt_config import init_jwt
 from config.settings import Config
 from routes.aulas_routes import *
 from routes.alunos_routes import *
-from routes.frequencias_routes import frequencia_bp
+from routes.frequencias_routes import frequencias_bp
 from routes.usuarios_routes import usuarios_bp
 import os
 
@@ -26,14 +26,17 @@ init_jwt(app)
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USENAME'] = os.getenv('EMAIL_USER')
-app.config['MAIL_PASSWORD'] = os.getenv('EMAIL_PASSWORD')
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
+
+mail = Mail(app)
 
 
 app.register_blueprint(alunos_bp)
 app.register_blueprint(aulas_bp)
 app.register_blueprint(usuarios_bp)
-app.register_blueprint(frequencia_bp)
+app.register_blueprint(frequencias_bp)
 
 
 if __name__ == '__main__':
