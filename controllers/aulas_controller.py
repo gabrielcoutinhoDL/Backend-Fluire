@@ -1,3 +1,4 @@
+
 from flask import request, jsonify
 from models.aulas_model import *
 
@@ -39,7 +40,6 @@ def criar_aula_controller():
         "mensagem": "Aula criada com sucesso",
         "id": aula_id
     }), 201
-   
     
 def buscar_todas_aulas_controller():
     aulas = AulasModel.buscar_todas_aulas()

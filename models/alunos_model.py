@@ -27,34 +27,43 @@ class AlunosModel:
         finally:
             connection.close()       
             
-    def criar_aluno(nome, telefone=None, email=None):
+                  
+    def criar_aluno(nome, telefone=None, email=None, usuario_logado_id=None):
         connection = get_connection()
-    
+
         try:
             with connection.cursor() as cursor:
-                sql = "INSERT INTO alunos (nome, telefone, email) VALUES (%s, %s, %s)"
-                cursor.execute(sql, (nome, telefone, email))
+                sql = """
+                    INSERT INTO alunos (nome, telefone, email, created_by)
+                    VALUES (%s, %s, %s, %s)
+                """
+                cursor.execute(sql, (nome, telefone, email, usuario_logado_id))
                 connection.commit()
-                
+
                 return cursor.lastrowid
+
+        except Exception:
+            connection.rollback()
+            raise
 
         finally:
             connection.close()
+       
         
-    def atualizar_aluno(id, nome=None, telefone=None, email=None):
+    def atualizar_aluno(id, nome=None, telefone=None, email=None, usuario_logado_id=None):
         connection = get_connection()
         
         try:
             with connection.cursor() as cursor:
-                sql = "UPDATE alunos SET nome = %s, telefone = %s, email = %s WHERE id = %s"
-                cursor.execute(sql, (nome, telefone, email, id))
+                sql = "UPDATE alunos SET nome = %s, telefone = %s, email = %s, updated_by = %s WHERE id = %s"
+                cursor.execute(sql, (nome, telefone, email, usuario_logado_id, id))
                 connection.commit()
                 
                 return print("Aluno atualizado com sucesso! Linhas afetadas:", cursor.rowcount)
 
         finally:
             connection.close()
-            
+           
     def deletar_aluno(id):
         connection = get_connection()
         
