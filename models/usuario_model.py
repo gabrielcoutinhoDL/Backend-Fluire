@@ -9,11 +9,11 @@ class UsuarioModel:
         try:
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "INSERT INTO usuarios (nome, email, senha) VALUES (%s, %s, %s) RETURNING id",
+                    "INSERT INTO usuarios (nome, email, senha) VALUES (%s, %s, %s)",
                     (nome, email, senha_hash)
                 )
-                usuario_id = cursor.fetchone()[0]
                 connection.commit()
+                usuario_id = cursor.lastrowid
                 return usuario_id
 
         finally:
@@ -27,7 +27,7 @@ class UsuarioModel:
         try:
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "SELECT id, nome, email, senha, tipo_usuario FROM usuarios WHERE nome = %s",
+                    "SELECT id, nome, email, senha FROM usuarios WHERE nome = %s",
                     (nome,)
                 )
                 usuario = cursor.fetchone()
@@ -36,8 +36,7 @@ class UsuarioModel:
                         "id": usuario[0],
                         "nome": usuario[1],
                         "email": usuario[2],
-                        "senha_hash": usuario[3],
-                        "tipo_usuario": usuario[4]
+                        "senha_hash": usuario[3]
                     }                   
                 return None
 
@@ -84,7 +83,7 @@ class UsuarioModel:
         try:
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "SELECT id, nome, email, senha, tipo_usuario FROM usuarios WHERE email = %s",
+                    "SELECT id, nome, email, senha FROM usuarios WHERE email = %s",
                     (email,)
                 )
                 usuario = cursor.fetchone()

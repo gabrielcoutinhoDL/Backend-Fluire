@@ -3,6 +3,10 @@ from controllers.usuarios_controller import *
 
 usuarios_bp = Blueprint ("usuarios_bd", __name__)
 
+@usuarios_bp.route("/login", methods=["POST"])
+def login_usuario():
+    return login_usuario_controller()
+
 @usuarios_bp.route("/usuarios", methods=["POST"])
 def criar_usuario():
     return criar_usuario_controller()

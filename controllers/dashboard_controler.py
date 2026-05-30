@@ -1,5 +1,6 @@
 from flask import jsonify
-from services.dashboard_service import *
+from services.dashboard_service import DashboardService
+
 
 def get_dashboard_controller():
     try:

@@ -10,32 +10,40 @@ import random
 
 
 def criar_usuario_controller():
-    dados = request.json
-
-    nome = dados.get("nome")
-    email = dados.get("email")
-    senha = dados.get("senha")
-
-    
-    # validações
-    if not nome:
-        return jsonify({
-            "erro": "Nome obrigatório"
-        }), 400
-
-    if not email:
-        return jsonify({
-            "erro": "Email obrigatório"
-        }), 400
-
-    if not senha:
-        return jsonify({
-            "erro": "Senha obrigatória"
-        }), 400
-
-    senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt())
 
     try:
+        dados = request.json
+
+        nome = dados.get("nome")
+        email = dados.get("email")
+        senha = dados.get("senha")
+
+        
+        # validações
+        if not nome:
+            return jsonify({
+                "erro": "Nome obrigatório"
+            }), 400
+
+        if not email:
+            return jsonify({
+                "erro": "Email obrigatório"
+            }), 400
+
+        if not senha:
+            return jsonify({
+                "erro": "Senha obrigatória"
+            }), 400
+
+        # Verificar se email já existe
+        usuario_existente = UsuarioModel.buscar_usuario_email(email)
+        if usuario_existente:
+            return jsonify({
+                "erro": "Email já cadastrado"
+            }), 400
+
+        senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
         usuario_id = UsuarioModel.criar_usuario(nome, email, senha_hash)
         return jsonify({
             "mensagem": "Usuário criado com sucesso",
@@ -43,8 +51,8 @@ def criar_usuario_controller():
         }), 201
     except Exception as e:
         return jsonify({
-            "erro": str(e)
-        }), 400
+            "erro": f"Erro ao criar usuário: {str(e)}"
+        }), 500
 
 
        
@@ -115,37 +123,50 @@ def deletar_usuario_controller(id):
         
         
 def login_usuario_controller():
-    dados = request.json
-
-    email = dados.get("email")
-    senha = dados.get("senha")
-
-    connection = get_connection()
-    cursor = connection.cursor()
-    
-    sql = """SELECT * FROM usuarios WHERE email = %s"""
     try:
+        dados = request.json
+
+        email = dados.get("email")
+        senha = dados.get("senha")
+
+        connection = get_connection()
+        cursor = connection.cursor()
+        
+        sql = """SELECT id, nome, email, senha FROM usuarios WHERE email = %s"""
         cursor.execute(sql, (email,))
         usuario = cursor.fetchone()
 
         if usuario:
-            if bcrypt.checkpw(senha.encode('utf-8'), usuario['senha'].encode('utf-8')):
-                token = create_access_token(identity=usuario['id'])
+            usuario_id = usuario['id']
+            nome = usuario['nome']
+            email_db = usuario['email']
+            senha_hash = usuario['senha']
+            if isinstance(senha_hash, str):
+                senha_hash_bytes = senha_hash.encode('utf-8')
+            else:
+                senha_hash_bytes = senha_hash
+            if bcrypt.checkpw(senha.encode('utf-8'), senha_hash_bytes):
+                token = create_access_token(identity=usuario_id)
                 
                 response = {"mensagem": "Login bem-sucedido", "usuario": {
-                    "id": usuario['id'],
-                    "nome": usuario['nome'],
-                    "email": usuario['email'] 
+                    "id": usuario_id,
+                    "nome": nome,
+                    "email": email_db 
                 }, "token": token}
                 
                 return jsonify(response), 200
             else:
                 return jsonify({"erro": "Senha incorreta"}), 401
+        else:
+            return jsonify({"erro": "Usuário não encontrado"}), 404
             
     except Exception as e:
-        return jsonify({"message": "Erro ao processar login", "erro": str(e)}), 401
+        return jsonify({"message": "Erro ao processar login", "erro": str(e)}), 500
     finally:
-        connection.close()
+        if 'cursor' in locals():
+            cursor.close()
+        if 'connection' in locals():
+            connection.close()
     
     #recuperar senha
 

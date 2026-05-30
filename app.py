@@ -8,6 +8,7 @@ from routes.aulas_routes import *
 from routes.alunos_routes import *
 from routes.frequencias_routes import frequencias_bp
 from routes.usuarios_routes import usuarios_bp
+from routes.dashboard_routes import dashboard_bp
 import os
 
 
@@ -37,6 +38,7 @@ app.register_blueprint(alunos_bp)
 app.register_blueprint(aulas_bp)
 app.register_blueprint(usuarios_bp)
 app.register_blueprint(frequencias_bp)
+app.register_blueprint(dashboard_bp)
 
 
 if __name__ == '__main__':
