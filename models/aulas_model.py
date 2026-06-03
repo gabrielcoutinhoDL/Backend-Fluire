@@ -1,33 +1,23 @@
 from config.database import get_connection
+from flask import request, jsonify
 
 class AulasModel:
-    
-    def criar_aula(nome, usuario_id, horario_inicio, horario_fim, frequencia=None, dia_semana=None, usuario_logado_id=None):
+                
+    def criar_aula(nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, usuario_logado_id=None):
         connection = get_connection()
-
+        
         try:
             with connection.cursor() as cursor:
-
-                # valida se usuário existe
-                cursor.execute("SELECT id FROM usuarios WHERE id = %s", (usuario_id,))
-                if not cursor.fetchone():
-                    raise Exception("Usuário não encontrado")
-
                 sql = """
-                    INSERT INTO aulas 
-                    (nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, created_by)
+                    INSERT INTO aulas (nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, created_by) 
                     VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """
-
                 cursor.execute(sql, (nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, usuario_logado_id))
                 connection.commit()
-
                 return cursor.lastrowid
-
         except Exception as e:
             connection.rollback()
             raise e
-
         finally:
             connection.close()
         

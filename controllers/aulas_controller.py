@@ -1,7 +1,7 @@
 
 from flask import request, jsonify
 from models.aulas_model import *
-
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 def criar_aula_controller():
     dados = request.json
@@ -12,8 +12,8 @@ def criar_aula_controller():
     horario_fim = dados.get("horario_fim")
     frequencia = dados.get("frequencia")
     dia_semana = dados.get("dia_semana")
+    usuario_logado_id = get_jwt_identity()
 
-    # validações
     if not nome:
         return jsonify({
             "erro": "Nome obrigatório"
@@ -21,7 +21,7 @@ def criar_aula_controller():
 
     if not usuario_id:
         return jsonify({
-            "erro": "Usuário ID obrigatório"
+            "erro": "ID do usuário obrigatório"
         }), 400
 
     if not horario_inicio:
@@ -34,13 +34,27 @@ def criar_aula_controller():
             "erro": "Horário de fim obrigatório"
         }), 400
 
-    aula_id = AulasModel.criar_aula(nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana)
+    if not frequencia:
+        return jsonify({
+            "erro": "Frequência obrigatória"
+        }), 400
 
-    return jsonify({
-        "mensagem": "Aula criada com sucesso",
-        "id": aula_id
-    }), 201
-    
+    if not dia_semana:
+        return jsonify({
+            "erro": "Dia da semana obrigatório"
+        }), 400
+
+    try:
+        aula_id = AulasModel.criar_aula(nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, usuario_logado_id)
+        return jsonify({
+            "id": aula_id
+        }), 201
+    except Exception as e:
+        return jsonify({
+            "erro": f"Erro ao criar aula: {str(e)}"
+        }), 500
+
+
 def buscar_todas_aulas_controller():
     aulas = AulasModel.buscar_todas_aulas()
     return jsonify(aulas), 200
@@ -64,6 +78,7 @@ def atualizar_aula_controller(id):
     horario_fim = dados.get("horario_fim")
     frequencia = dados.get("frequencia")
     dia_semana = dados.get("dia_semana")
+    usuario_logado_id = get_jwt_identity()
 
     aula_existente = AulasModel.buscar_aula_por_id(id)
 
@@ -72,7 +87,7 @@ def atualizar_aula_controller(id):
             "erro": "Aula não encontrada"
         }), 404
 
-    AulasModel.atualizar_aula(id, nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana)
+    AulasModel.atualizar_aula(id, nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, usuario_logado_id)
 
     return jsonify({
         "mensagem": "Aula atualizada com sucesso"

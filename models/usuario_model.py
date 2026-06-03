@@ -2,7 +2,7 @@ from config.database import get_connection
 
 class UsuarioModel:
 
-    @staticmethod
+    
     def criar_usuario(nome, email, senha_hash):
         connection = get_connection()
     
@@ -27,24 +27,34 @@ class UsuarioModel:
         try:
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "SELECT id, nome, email, senha, tipo_usuario FROM usuarios WHERE nome = %s",
-                    (nome,)
+                    "SELECT id, nome, email, senha FROM usuarios WHERE nome LIKE %s",
+                    (f"%{nome}%",)
                 )
                 usuario = cursor.fetchone()
+                
                 if usuario:
-                    return {
-                        "id": usuario[0],
-                        "nome": usuario[1],
-                        "email": usuario[2],
-                        "senha_hash": usuario[3],
-                        "tipo_usuario": usuario[4]
-                    }                   
+                    return usuario
                 return None
+        finally:
+            connection.close()
+           
+    @staticmethod        
+    def buscar_todos_usuarios():
+        connection = get_connection()
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT id, nome, email, senha FROM usuarios"
+                )
+                usuarios = cursor.fetchall()
+                
+                return usuarios
 
         finally:
             connection.close()
-            
-    @staticmethod
+    
+    
     def atualizar_usuario(id, nome, email, senha_hash):
         connection = get_connection()
     
@@ -60,7 +70,7 @@ class UsuarioModel:
         finally:
             connection.close()
     
-    @staticmethod
+    
     def deletar_usuario(id):
         connection = get_connection()
     
@@ -76,11 +86,28 @@ class UsuarioModel:
         finally:
             connection.close()
 
-
     @staticmethod
     def buscar_usuario_email(email):
         connection = get_connection()
 
+        try:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT id, nome, email, senha FROM usuarios WHERE email = %s",
+                        (email,)
+                    )
+                    usuario = cursor.fetchone()
+                    
+                    if usuario:
+                        return usuario
+                    return None
+        finally:
+            connection.close()
+    
+            
+    @staticmethod
+    def login_usuario(email, senha):
+        connection = get_connection()
         try:
             with connection.cursor() as cursor:
                 cursor.execute(
@@ -89,12 +116,20 @@ class UsuarioModel:
                 )
                 usuario = cursor.fetchone()
                 if usuario:
-                    return {
-                        "id": usuario[0],
-                        "nome": usuario[1],
-                        "email": usuario[2],
-                    }                   
+                    return usuario
                 return None
-
+        
+            if usuario:
+                usuario_id = usuario['id']
+                senha_hash = usuario['senha']
+                if isinstance(senha_hash, str):
+                    senha_hash_bytes = senha_hash.encode('utf-8')
+                else:
+                    senha_hash_bytes = senha_hash
+                if bcrypt.checkpw(senha.encode('utf-8'), senha_hash_bytes):
+                    token = create_access_token(identity=usuario_id)
+                    return token
+        except Exception as e:
+            return None
         finally:
             connection.close()
