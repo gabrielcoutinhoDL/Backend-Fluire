@@ -23,6 +23,10 @@ def atualizar_usuario(id):
 def deletar_usuario(id):
     return deletar_usuario_controller(id)
 
+@usuarios_bp.route("/login", methods=["POST"])
+def login():
+    return login_usuario_controller()
+
 @usuarios_bp.route("/recuperar-senha", methods=["POST"])
 def recuperar_senha():
     return recuperar_senha_controller()

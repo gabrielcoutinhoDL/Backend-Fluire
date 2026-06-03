@@ -3,6 +3,7 @@ from config.database import get_connection
 
 class AlunosModel:
     
+    @staticmethod
     def buscar_todos_alunos():
         connection = get_connection()
         
@@ -15,6 +16,7 @@ class AlunosModel:
         finally:
             connection.close()
 
+    @staticmethod
     def buscar_aluno_por_id(id):
         connection = get_connection()
         
@@ -28,6 +30,7 @@ class AlunosModel:
             connection.close()       
             
                   
+    @staticmethod
     def criar_aluno(nome, telefone=None, email=None, usuario_logado_id=None):
         connection = get_connection()
 
@@ -50,6 +53,7 @@ class AlunosModel:
             connection.close()
        
         
+    @staticmethod
     def atualizar_aluno(id, nome=None, telefone=None, email=None, usuario_logado_id=None):
         connection = get_connection()
         
@@ -64,7 +68,8 @@ class AlunosModel:
         finally:
             connection.close()
            
-    def deletar_aluno(id):
+    @staticmethod
+    def deletar_aluno(id, usuario_logado_id=None):
         connection = get_connection()
         
         try:
@@ -78,6 +83,7 @@ class AlunosModel:
         finally:
             connection.close()
 
+    @staticmethod
     def buscar_alunos_por_nome(nome):
         connection = get_connection()
         

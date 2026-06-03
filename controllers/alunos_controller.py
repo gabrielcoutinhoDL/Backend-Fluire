@@ -1,21 +1,31 @@
 from flask import request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.alunos_model import *
 
-
+@jwt_required()
 def criar_aluno_controller():
     dados = request.json
 
     nome = dados.get("nome")
     email = dados.get("email")
     telefone = dados.get("telefone")
-    usuario_logado_id = dados.get("usuario_logado_id")
+    usuario_logado_id = get_jwt_identity()
 
     if not nome:
         return jsonify({"erro": "Nome obrigatório"}), 400
 
+    if not email:
+        return jsonify({"erro": "Email obrigatório"}), 400
+
+    if not telefone:
+        return jsonify({"erro": "Telefone obrigatório"}), 400
+
     try:
         aluno_id = AlunosModel.criar_aluno(nome, telefone, email, usuario_logado_id)
-        return jsonify({"id": aluno_id}), 201
+        return jsonify({
+            "mensagem": "Aluno criado com sucesso",
+            "id": aluno_id
+        }), 201
     except Exception as e:
         return jsonify({"erro": str(e)}), 400
 
@@ -36,13 +46,14 @@ def buscar_aluno_por_id_controller(id):
     return jsonify(aluno), 200
 
 
+@jwt_required()
 def atualizar_aluno_controller(id):
     dados = request.json
-
     nome = dados.get("nome")
     email = dados.get("email")
     telefone = dados.get("telefone")
-    usuario_logado_id = dados.get("usuario_logado_id")
+    usuario_logado_id = get_jwt_identity()
+
     aluno_existente = AlunosModel.buscar_aluno_por_id(id)
 
     if not aluno_existente:
@@ -57,7 +68,10 @@ def atualizar_aluno_controller(id):
     }), 200
 
 
+@jwt_required()
 def deletar_aluno_controller(id):
+    usuario_logado_id = get_jwt_identity()
+
     aluno_existente = AlunosModel.buscar_aluno_por_id(id)
 
     if not aluno_existente:
@@ -65,7 +79,7 @@ def deletar_aluno_controller(id):
             "erro": "Aluno não encontrado"
         }), 404
 
-    AlunosModel.deletar_aluno(id)
+    AlunosModel.deletar_aluno(id, usuario_logado_id)
 
     return jsonify({
         "mensagem": "Aluno deletado com sucesso"
