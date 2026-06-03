@@ -7,7 +7,7 @@ class DashboardService:
         try:
             total_alunos = DashboardService.get_total_alunos()
             total_aulas = DashboardService.get_total_aulas()
-            media_frequencia = DashboardService.get_media_frequencia()
+            media_frequencias = DashboardService.get_media_frequencias()
             proximas_aulas = DashboardService.get_proximas_aulas()
             total_alunos_com_falta = DashboardService.get_total_alunos_com_falta()
 
@@ -17,8 +17,8 @@ class DashboardService:
                     "alunos_presentes": total_alunos,
                     "aulas_hoje": len(proximas_aulas),
                     "em_andamento": min(len(proximas_aulas), 1),
-                    "frequencia_media": media_frequencia,
-                    "semana_frequencia": DashboardService.get_semana_frequencia(),
+                    "frequencias_media": media_frequencias,
+                    "semana_frequencias": DashboardService.get_semana_frequencias(),
                     "today_classes": proximas_aulas,
                     "total_alunos": total_alunos,
                     "total_aulas": total_aulas,
@@ -59,7 +59,7 @@ class DashboardService:
         except Exception as e:
             raise Exception(f"Erro ao obter próximas aulas: {str(e)}")
 
-    def get_media_frequencia():
+    def get_media_frequencias():
         try:
             connection = get_connection()
             cursor = connection.cursor()
@@ -68,18 +68,18 @@ class DashboardService:
                 "SELECT AVG(CASE WHEN presente = 1 THEN 1 ELSE 0 END) FROM frequencias"
             )
             row = cursor.fetchone()
-            media_frequencia = list(row.values())[0] if row else 0
+            media_frequencias = list(row.values())[0] if row else 0
 
             cursor.close()
             connection.close()
 
-            if media_frequencia is None:
+            if media_frequencias is None:
                 return 0
-            return round(float(media_frequencia) * 100)
+            return round(float(media_frequencias) * 100)
         except Exception:
             return 0
 
-    def get_semana_frequencia():
+    def get_semana_frequencias():
         dias = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']
         try:
             connection = get_connection()

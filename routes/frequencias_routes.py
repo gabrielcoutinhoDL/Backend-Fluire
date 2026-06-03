@@ -5,21 +5,21 @@ from controllers.frequencias_controller import *
 frequencias_bp = Blueprint('frequencias', __name__)
 
 @frequencias_bp.route('/frequencias', methods=['GET'])
-def listar_frequencia():
-    return listar_frequencia_controller()
+def listar_frequencias():
+    return listar_frequencias_controller() ##feito
 
-@frequencias_bp.route('/frequencias/aula/<int:aula_id>', methods=['GET'])
+@frequencias_bp.route('/frequencias/aulas/<int:aula_id>', methods=['GET'])
 def buscar_frequencias_aula(aula_id):
-    return buscar_frequencias_aula_controller(aula_id)
+    return buscar_frequencias_aula_controller(aula_id) #feito
 
 @frequencias_bp.route('/frequencias', methods=['POST'])
-def registrar_frequencia():
-    return registrar_frequencia_controller()
+def registrar_frequencias():
+    return registrar_frequencias_controller() ##feito
 
 @frequencias_bp.route('/frequencias/<int:id>', methods=['PUT'])
-def atualizar_frequencia(id):
-    return atualizar_frequencia_controller(id)
+def atualizar_frequencias(id):
+    return atualizar_frequencias_controller(id) ##feito
         
 @frequencias_bp.route('/frequencias/<int:id>', methods=['DELETE'])
-def deletar_frequencia(id):
-    return deletar_frequencia_controller(id)
+def deletar_frequencias(id):
+    return deletar_frequencias_controller(id) #feito
