@@ -26,16 +26,6 @@ def associar_aluno_a_aula_controller():
         return jsonify({
             "erro": str(e)
         }), 400
-        
-        
-def buscar_aulas_por_aluno_id_controller(aluno_id):
-    try:
-        aulas = AulaAlunosModel.buscar_aulas_por_aluno_id(aluno_id)
-        return jsonify(aulas), 200
-    except Exception as e:
-        return jsonify({
-            "erro": str(e)
-        }), 400
 
 
 def remover_aluno_da_aula_controller():

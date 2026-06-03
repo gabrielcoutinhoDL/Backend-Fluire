@@ -36,27 +36,7 @@ class AulaAlunosModel:
 
         finally:
             connection.close()
-            
-    def buscar_aulas_por_aluno_id(aluno_id):
-        connection = get_connection()
-
-        try:
-            with connection.cursor() as cursor:
-                sql = """
-                    SELECT a.id, a.nome, a.usuario_id, a.horario_inicio, a.horario_fim, a.frequencia, a.dia_semana
-                    FROM aulas a
-                    JOIN aula_alunos aa ON a.id = aa.aula_id
-                    WHERE aa.aluno_id = %s
-                """
-                cursor.execute(sql, (aluno_id,))
-                aulas = cursor.fetchall()
-                return aulas
-
-        except Exception as e:
-            raise e
-
-        finally:
-            connection.close()
+        
             
     def remover_aluno_da_aula(aula_id, aluno_id):
         connection = get_connection()
