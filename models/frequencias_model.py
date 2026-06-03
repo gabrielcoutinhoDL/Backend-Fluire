@@ -48,14 +48,14 @@ def verificar_frequencia_existente(aula_id, aluno_id):
     except Exception as e:
         raise Exception(f"Erro ao verificar frequência existente: {str(e)}")
     
-def inserir_frequencia(aula_id, aluno_id, presente, data_presenca):
+def inserir_frequencia_model(aula_id, aluno_id, presente):
     try:
         connection = get_connection()
         cursor = connection.cursor()
 
         cursor.execute(
-            "INSERT INTO frequencias (aula_id, aluno_id, presente, data_presenca) VALUES (%s, %s, %s, %s)",
-            (aula_id, aluno_id, presente, data_presenca)
+            "INSERT INTO frequencias (aula_id, aluno_id, presente) VALUES (%s, %s, %s)",
+            (aula_id, aluno_id, presente)
         )
         connection.commit()
 

@@ -10,13 +10,13 @@ def validar_presente_service(presente):
     if presente not in [0, 1]:
         raise Exception("Valor de 'presente' deve ser 0 (ausente) ou 1 (presente).")
 
-def registrar_frequencia_service(aula_id, aluno_id, presente, data_presenca):
+def registrar_frequencia_service(aula_id, aluno_id, presente):
     validar_presente_service(presente)
     frequencia_existente = verificar_frequencia_existente(aula_id, aluno_id)
     if frequencia_existente:
         raise Exception("Frequência já registrada para este aluno nesta aula.")
     
-    inserir_frequencia(aula_id, aluno_id, presente, data_presenca)
+    inserir_frequencia_model(aula_id, aluno_id, presente)
     return {
         "mensagem": "Frequência registrada com sucesso"
     }

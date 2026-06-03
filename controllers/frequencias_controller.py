@@ -3,7 +3,7 @@ from services.frequencia_service import *
 
 
 # validar se o resultado da frequencia é 1 ou 0, caso seja 1, o aluno está presente, caso seja 0, o aluno está ausente
-def listar_frequencia():
+def listar_frequencia_controller():
     try:
         frequencias = todas_listar_frequencias_service()
         return jsonify(frequencias), 200
@@ -25,13 +25,12 @@ def validar_presente(presente):
     if presente not in [0, 1]:
         raise Exception("Valor de 'presente' deve ser 0 (ausente) ou 1 (presente).")
         
-def registrar_frequencia():
+def registrar_frequencia_controller():
     dados = request.json
 
     aula_id = dados.get("aula_id")
     aluno_id = dados.get("aluno_id")
     presente = dados.get("presente")
-    data_presenca = dados.get("data_presenca")
 
     if not aula_id:
         return jsonify({
@@ -48,15 +47,10 @@ def registrar_frequencia():
             "erro": "Presente obrigatório"
         }), 400
 
-    if not data_presenca:
-        return jsonify({
-            "erro": "Data de presença obrigatória"
-        }), 400
-
     validar_presente(presente)
 
     try:
-        resultado = registrar_frequencia_service(aula_id, aluno_id, presente, data_presenca)
+        resultado = registrar_frequencia_service(aula_id, aluno_id, presente)
         return jsonify(resultado), 201
     except Exception as e:
         return jsonify({
@@ -64,10 +58,16 @@ def registrar_frequencia():
         }), 400
     
        
-def atualizar_frequencia(id, aula_id, aluno_id, presente, data_presenca):
+def atualizar_frequencia_controller(id):
+    dados = request.json
+
+    aula_id = dados.get("aula_id")
+    aluno_id = dados.get("aluno_id")
+    presente = dados.get("presente")
+
     validar_presente(presente)
     try:
-        resultado = atualizar_frequencia_service(id, aula_id, aluno_id, presente, data_presenca)
+        resultado = atualizar_frequencia_service(id, aula_id, aluno_id, presente)
         return jsonify(resultado), 200
     except Exception as e:
         return jsonify({
@@ -75,7 +75,7 @@ def atualizar_frequencia(id, aula_id, aluno_id, presente, data_presenca):
         }), 400
     
     
-def deletar_frequencia(id):
+def deletar_frequencia_controller(id):
     try:
         resultado = deletar_frequencia_service(id)
         return jsonify(resultado), 200
