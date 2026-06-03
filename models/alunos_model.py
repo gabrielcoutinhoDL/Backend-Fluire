@@ -62,8 +62,7 @@ class AlunosModel:
                 sql = "UPDATE alunos SET nome = %s, telefone = %s, email = %s, updated_by = %s WHERE id = %s"
                 cursor.execute(sql, (nome, telefone, email, usuario_logado_id, id))
                 connection.commit()
-                
-                return print("Aluno atualizado com sucesso! Linhas afetadas:", cursor.rowcount)
+                return cursor.rowcount > 0
 
         finally:
             connection.close()
@@ -77,8 +76,7 @@ class AlunosModel:
                 sql = "DELETE FROM alunos WHERE id = %s"
                 cursor.execute(sql, (id,))
                 connection.commit()
-                
-                return print("Aluno deletado com sucesso! Linhas afetadas:", cursor.rowcount)
+                return cursor.rowcount > 0
 
         finally:
             connection.close()

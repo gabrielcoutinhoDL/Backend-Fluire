@@ -25,6 +25,7 @@ def atualizar(id):
     return atualizar_aluno_controller(id)
 
 @alunos_bp.route("/alunos/<int:id>", methods=["DELETE"])
+@jwt_required()
 def deletar(id):
     return deletar_aluno_controller(id)
 
