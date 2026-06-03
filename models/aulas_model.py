@@ -1,6 +1,7 @@
 from config.database import get_connection
 from flask import request, jsonify
 
+
 class AulasModel:
                 
     def criar_aula(nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, usuario_logado_id=None):
@@ -62,7 +63,7 @@ class AulasModel:
           
     def atualizar_aula(id, nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, usuario_logado_id=None):
         connection = get_connection()
-        
+
         try:
             with connection.cursor() as cursor:
                 sql = """
@@ -74,13 +75,13 @@ class AulasModel:
                 if cursor.rowcount == 0:
                     raise Exception("Aula não encontrada")
                 connection.commit()
-                
-                return cursor.rowcount  
-            
+
+                return cursor.rowcount
+
         except Exception as e:
             connection.rollback()
             raise e
-        
+
         finally:
             connection.close()
 
