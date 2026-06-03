@@ -15,6 +15,7 @@ class AulasModel:
                 cursor.execute(sql, (nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, usuario_logado_id))
                 connection.commit()
                 return cursor.lastrowid
+            
         except Exception as e:
             connection.rollback()
             raise e
@@ -22,54 +23,41 @@ class AulasModel:
             connection.close()
         
             
+    @staticmethod
     def buscar_todas_aulas():
         connection = get_connection()
 
         try:
             with connection.cursor() as cursor:
-                sql = "SELECT * FROM aulas"
-                cursor.execute(sql)
-                result = cursor.fetchall()
+                cursor.execute("""
+                    SELECT
+                        id,
+                        nome,
+                        usuario_id,
+                        horario_inicio,
+                        horario_fim,
+                        frequencia,
+                        dia_semana
+                    FROM aulas
+                """)
 
-                # Converte resultados para dicionário
-                aulas = []
-                for row in result:
-                    aulas.append({
-                        'id': row[0],
-                        'nome': row[1],
-                        'usuario_id': row[2],
-                        'horario_inicio': row[3],
-                        'horario_fim': row[4],
-                        'frequencia': row[5] if row[5] else None,
-                        'dia_semana': row[6] if row[6] else None
-                    })
-                return aulas
-        finally:
-            connection.close()   
-         
-            
-    def buscar_aula_por_id(id):
-        connection = get_connection()
+                aulas = cursor.fetchall()
 
-        try:
-            with connection.cursor() as cursor:
-                sql = "SELECT * FROM aulas WHERE id = %s"
-                cursor.execute(sql, (id,))
-                result = cursor.fetchone()
-
-                if result:
-                    return {
-                        'id': result[0],
-                        'nome': result[1],
-                        'usuario_id': result[2],
-                        'horario_inicio': result[3],
-                        'horario_fim': result[4],
-                        'frequencia': result[5] if result[5] else None,
-                        'dia_semana': result[6] if result[6] else None
+                return [
+                    {
+                        "id": aula["id"],
+                        "nome": aula["nome"],
+                        "usuario_id": aula["usuario_id"],
+                        "horario_inicio": str(aula["horario_inicio"]),
+                        "horario_fim": str(aula["horario_fim"]),
+                        "frequencia": aula["frequencia"],
+                        "dia_semana": aula["dia_semana"]
                     }
-                return None
+                    for aula in aulas
+                ]
+
         finally:
-            connection.close() 
+            connection.close()    
             
           
     def atualizar_aula(id, nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, usuario_logado_id=None):
@@ -97,23 +85,18 @@ class AulasModel:
             connection.close()
 
            
-    def deletar_aula(id, usuario_logado_id=None):
+    def deletar_aula(id):
         connection = get_connection()
-
+        
         try:
             with connection.cursor() as cursor:
                 sql = "DELETE FROM aulas WHERE id = %s"
                 cursor.execute(sql, (id,))
-                if cursor.rowcount == 0:
-                    raise Exception("Aula não encontrada")
-                
                 connection.commit()
-                
                 return cursor.rowcount
-
         except Exception as e:
             connection.rollback()
             raise e
-
         finally:
             connection.close()
+

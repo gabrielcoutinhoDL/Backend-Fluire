@@ -4,16 +4,13 @@ from controllers.aulas_controller import *
 aulas_bp = Blueprint("aulas_bp", __name__)
 
 @aulas_bp.route("/aulas", methods=["POST"])
-def criar():
+@jwt_required()
+def criar_aula():
     return criar_aula_controller()
 
 @aulas_bp.route("/aulas", methods=["GET"])
-def buscar_todas():
+def buscar_todas_aulas():
     return buscar_todas_aulas_controller()
-
-@aulas_bp.route("/aulas/<int:id>", methods=["GET"])
-def buscar_por_id(id):
-    return buscar_aula_por_id_controller(id)
 
 @aulas_bp.route("/aulas/<int:id>", methods=["PUT"])
 def atualizar(id):

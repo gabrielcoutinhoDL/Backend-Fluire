@@ -3,6 +3,8 @@ from flask import request, jsonify
 from models.aulas_model import *
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+@jwt_required()
+
 def criar_aula_controller():
     dados = request.json
 
@@ -12,7 +14,7 @@ def criar_aula_controller():
     horario_fim = dados.get("horario_fim")
     frequencia = dados.get("frequencia")
     dia_semana = dados.get("dia_semana")
-    usuario_logado_id = get_jwt_identity()
+    usuario_logado_id = int(get_jwt_identity())
 
     if not nome:
         return jsonify({
@@ -56,18 +58,16 @@ def criar_aula_controller():
 
 
 def buscar_todas_aulas_controller():
-    aulas = AulasModel.buscar_todas_aulas()
-    return jsonify(aulas), 200
+    try:
+        aulas = AulasModel.buscar_todas_aulas()
 
-def buscar_aula_por_id_controller(id):
-    aula = AulasModel.buscar_aula_por_id(id)
+        return jsonify(aulas), 200
 
-    if not aula:
+    except Exception as e:
         return jsonify({
-            "erro": "Aula não encontrada"
-        }), 404
+            "erro": str(e)
+        }), 500
 
-    return jsonify(aula), 200
 
 def atualizar_aula_controller(id):
     dados = request.json
@@ -93,17 +93,15 @@ def atualizar_aula_controller(id):
         "mensagem": "Aula atualizada com sucesso"
     }), 200
     
+    
 def deletar_aula_controller(id):
-    aula_existente = AulasModel.buscar_aula_por_id(id)
-
-    if not aula_existente:
+    try:
+        AulasModel.deletar_aula(id)
         return jsonify({
-            "erro": "Aula não encontrada"
-        }), 404
-
-    AulasModel.deletar_aula(id)
-
-    return jsonify({
-        "mensagem": "Aula deletada com sucesso"
-    }), 200
+            "mensagem": "Aula deletada com sucesso"
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "erro": str(e)
+        }), 500
     

@@ -1,19 +1,24 @@
 from config.database import get_connection
+import bcrypt
+from flask_jwt_extended import create_access_token
 
 class UsuarioModel:
 
-    
     def criar_usuario(nome, email, senha_hash):
+        
         connection = get_connection()
-    
+
         try:
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "INSERT INTO usuarios (nome, email, senha) VALUES (%s, %s, %s) RETURNING id",
+                    "INSERT INTO usuarios (nome, email, senha) VALUES (%s, %s, %s)",
                     (nome, email, senha_hash)
                 )
-                usuario_id = cursor.fetchone()[0]
+
                 connection.commit()
+
+                usuario_id = cursor.lastrowid
+
                 return usuario_id
 
         finally:
@@ -108,28 +113,41 @@ class UsuarioModel:
     @staticmethod
     def login_usuario(email, senha):
         connection = get_connection()
+
         try:
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "SELECT id, nome, email, senha, tipo_usuario FROM usuarios WHERE email = %s",
+                    """
+                    SELECT id, nome, email, senha
+                    FROM usuarios
+                    WHERE email = %s
+                    """,
                     (email,)
                 )
+
                 usuario = cursor.fetchone()
-                if usuario:
-                    return usuario
-                return None
-        
-            if usuario:
-                usuario_id = usuario['id']
-                senha_hash = usuario['senha']
+
+                if not usuario:
+                    return None
+
+                senha_hash = usuario["senha"]
+
                 if isinstance(senha_hash, str):
-                    senha_hash_bytes = senha_hash.encode('utf-8')
-                else:
-                    senha_hash_bytes = senha_hash
-                if bcrypt.checkpw(senha.encode('utf-8'), senha_hash_bytes):
-                    token = create_access_token(identity=usuario_id)
-                    return token
-        except Exception as e:
-            return None
+                    senha_hash = senha_hash.encode("utf-8")
+                    
+                senha_valida = bcrypt.checkpw(
+                    senha.encode("utf-8"),
+                    senha_hash
+                )
+
+                if not senha_valida:
+                    return None
+
+                return {
+                    "id": usuario["id"],
+                    "nome": usuario["nome"],
+                    "email": usuario["email"]
+                }
+
         finally:
             connection.close()

@@ -4,18 +4,15 @@ from models.usuario_model import UsuarioModel
 import bcrypt
 from flask_mail import Message, Mail
 import random
-from extensions.db import get_connection
+from config.database import get_connection
 
 # Validado no postman
 def criar_usuario_controller():
     dados = request.json
-
     nome = dados.get("nome")
     email = dados.get("email")
     senha = dados.get("senha")
-
     
-    # validações
     if not nome:
         return jsonify({
             "erro": "Nome obrigatório"
@@ -34,39 +31,6 @@ def criar_usuario_controller():
     senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt())
 
     try:
-        dados = request.json
-
-        nome = dados.get("nome")
-        email = dados.get("email")
-        senha = dados.get("senha")
-
-        
-        # validações
-        if not nome:
-            return jsonify({
-                "erro": "Nome obrigatório"
-            }), 400
-
-        if not email:
-            return jsonify({
-                "erro": "Email obrigatório"
-            }), 400
-
-        if not senha:
-            return jsonify({
-                "erro": "Senha obrigatória"
-            }), 400
-
-        # Verificar se email já existe
-        usuario_existente = UsuarioModel.buscar_usuario_email(email)
-        
-        if usuario_existente:
-            return jsonify({
-                "erro": "Email já cadastrado"
-            }), 400
-
-        senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
         usuario_id = UsuarioModel.criar_usuario(nome, email, senha_hash)
         return jsonify({
             "mensagem": "Usuário criado com sucesso",
@@ -76,7 +40,6 @@ def criar_usuario_controller():
         return jsonify({
             "erro": str(e)
         }), 400
-
 
 # Validado no postman
 def buscar_usuario_nome_controller(nome):
@@ -161,17 +124,9 @@ def deletar_usuario_controller(id):
         
 # Validado no postman
 def login_usuario_controller():
-    dados = request.json
-
-    email = dados.get("email")
-    senha = dados.get("senha")
-
-    connection = get_connection()
-    cursor = connection.cursor()
-    
-    sql = """SELECT * FROM usuarios WHERE email = %s"""
     try:
         dados = request.json
+
         email = dados.get("email")
         senha = dados.get("senha")
 
@@ -184,23 +139,30 @@ def login_usuario_controller():
             return jsonify({
                 "erro": "Senha é obrigatória"
             }), 400
-            
+
         usuario = UsuarioModel.login_usuario(email, senha)
-        
+
         if not usuario:
             return jsonify({
                 "erro": "Email ou senha inválidos"
             }), 401
 
-        token = create_access_token(identity=usuario['id'])
+        token = create_access_token(identity=str(usuario["id"])) 
+
         return jsonify({
-            "token": token
+            "mensagem": "Login realizado com sucesso",
+            "token": token,
+            "usuario": {
+                "id": usuario["id"],
+                "nome": usuario["nome"],
+                "email": usuario["email"]
+            }
         }), 200
 
     except Exception as e:
         return jsonify({
             "erro": str(e)
-        }), 500    
+        }), 500
 
 
 #recuperar senha
