@@ -12,7 +12,7 @@ def criar_aula_controller():
     usuario_id = dados.get("usuario_id")
     horario_inicio = dados.get("horario_inicio")
     horario_fim = dados.get("horario_fim")
-    frequencia = dados.get("frequencia")
+    frequencias = dados.get("frequencias")
     dia_semana = dados.get("dia_semana")
     usuario_logado_id = int(get_jwt_identity())
 
@@ -36,7 +36,7 @@ def criar_aula_controller():
             "erro": "Horário de fim obrigatório"
         }), 400
 
-    if not frequencia:
+    if not frequencias:
         return jsonify({
             "erro": "Frequência obrigatória"
         }), 400
@@ -47,7 +47,7 @@ def criar_aula_controller():
         }), 400
 
     try:
-        aula_id = AulasModel.criar_aula(nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, usuario_logado_id)
+        aula_id = AulasModel.criar_aula(nome, usuario_id, horario_inicio, horario_fim, frequencias, dia_semana, usuario_logado_id)
         return jsonify({
             "id": aula_id
         }), 201
@@ -76,7 +76,7 @@ def atualizar_aula_controller(id):
     usuario_id = dados.get("usuario_id")
     horario_inicio = dados.get("horario_inicio")
     horario_fim = dados.get("horario_fim")
-    frequencia = dados.get("frequencia")
+    frequencias = dados.get("frequencias")
     dia_semana = dados.get("dia_semana")
     usuario_logado_id = get_jwt_identity()
 
@@ -87,7 +87,7 @@ def atualizar_aula_controller(id):
             "erro": "Aula não encontrada"
         }), 404
 
-    AulasModel.atualizar_aula(id, nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, usuario_logado_id)
+    AulasModel.atualizar_aula(id, nome, usuario_id, horario_inicio, horario_fim, frequencias, dia_semana, usuario_logado_id)
 
     return jsonify({
         "mensagem": "Aula atualizada com sucesso"

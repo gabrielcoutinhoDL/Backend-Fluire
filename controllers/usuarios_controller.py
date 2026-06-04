@@ -8,41 +8,43 @@ from config.database import get_connection
 
 # Validado no postman
 def criar_usuario_controller():
+    dados = request.json
+    nome = dados.get("nome")
+    email = dados.get("email")
+    senha = dados.get("senha")
+
+    # validações
+    if not nome:
+        return jsonify({
+            "erro": "Nome obrigatório"
+        }), 400
+
+    if not email:
+        return jsonify({
+            "erro": "Email obrigatório"
+        }), 400
+
+    if not senha:
+        return jsonify({
+            "erro": "Senha obrigatória"
+        }), 400
+
+    # Verificar se email já existe
+    usuario_existente = UsuarioModel.buscar_usuario_email(email)
+    if usuario_existente:
+        return jsonify({
+            "erro": "Email já cadastrado"
+        }), 400
+
+    senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
     try:
-        dados = request.json
-        nome = dados.get("nome")
-        email = dados.get("email")
-        senha = dados.get("senha")
-
-        if not nome:
-            return jsonify({
-                "erro": "Nome obrigatório"
-            }), 400
-
-        if not email:
-            return jsonify({
-                "erro": "Email obrigatório"
-            }), 400
-
-        if not senha:
-            return jsonify({
-                "erro": "Senha obrigatória"
-            }), 400
-
-        # Verificar se email já existe
-        usuario_existente = UsuarioModel.buscar_usuario_email(email)
-        if usuario_existente:
-            return jsonify({
-                "erro": "Email já cadastrado"
-            }), 400
-
-        senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
         usuario_id = UsuarioModel.criar_usuario(nome, email, senha_hash)
         return jsonify({
             "mensagem": "Usuário criado com sucesso",
             "id": usuario_id
         }), 201
+
     except Exception as e:
         return jsonify({
             "erro": f"Erro ao criar usuário: {str(e)}"
