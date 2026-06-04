@@ -12,13 +12,7 @@ def criar_usuario_controller():
     nome = dados.get("nome")
     email = dados.get("email")
     senha = dados.get("senha")
-    
-    if not nome:
-        return jsonify({
-            "erro": "Nome obrigatório"
-        }), 400
 
-        
     # validações
     if not nome:
         return jsonify({

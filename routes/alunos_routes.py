@@ -1,5 +1,6 @@
 from flask import Blueprint
 from controllers.alunos_controller import *
+from flask_jwt_extended import jwt_required
 
 alunos_bp = Blueprint("alunos_bp", __name__)
 
@@ -9,10 +10,12 @@ def criar():
     return criar_aluno_controller()
 
 @alunos_bp.route("/alunos", methods=["GET"])
+@jwt_required()
 def buscar_todos():
     return buscar_todos_alunos_controller()
 
 @alunos_bp.route("/alunos/<int:id>", methods=["GET"])
+@jwt_required()
 def buscar_por_id(id):
     return buscar_aluno_por_id_controller(id)
 

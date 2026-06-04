@@ -96,16 +96,19 @@ class UsuarioModel:
         connection = get_connection()
 
         try:
-                with connection.cursor() as cursor:
-                    cursor.execute(
-                        "SELECT id, nome, email, senha FROM usuarios WHERE email = %s",
-                        (email,)
-                    )
-                    usuario = cursor.fetchone()
-                    
-                    if usuario:
-                        return usuario
-                    return None
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT id, nome, email, senha FROM usuarios WHERE email = %s",
+                    (email,)
+                )
+                usuario = cursor.fetchone()
+                if usuario:
+                    return {
+                        "id": usuario["id"],
+                        "nome": usuario["nome"],
+                        "email": usuario["email"]
+                    }
+                return None
         finally:
             connection.close()
     

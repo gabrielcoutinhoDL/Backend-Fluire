@@ -3,6 +3,7 @@ from datetime import datetime
 
 
 class DashboardService:
+    @staticmethod
     def get_dashboard():
         try:
             total_alunos = DashboardService.get_total_alunos()
@@ -30,6 +31,7 @@ class DashboardService:
         except Exception as e:
             raise Exception(f"Erro ao obter dados do dashboard: {str(e)}")
 
+    @staticmethod
     def get_proximas_aulas():
         try:
             connection = get_connection()
@@ -59,6 +61,7 @@ class DashboardService:
         except Exception as e:
             raise Exception(f"Erro ao obter próximas aulas: {str(e)}")
 
+    @staticmethod
     def get_media_frequencias():
         try:
             connection = get_connection()
@@ -110,6 +113,7 @@ class DashboardService:
         except Exception:
             return [{"day": d, "value": 20.0} for d in dias]
 
+    @staticmethod
     def get_total_alunos():
         try:
             connection = get_connection()
@@ -122,6 +126,7 @@ class DashboardService:
         except Exception as e:
             raise Exception(f"Erro ao obter total de alunos: {str(e)}")
 
+    @staticmethod
     def get_total_aulas():
         try:
             connection = get_connection()
@@ -134,6 +139,7 @@ class DashboardService:
         except Exception as e:
             raise Exception(f"Erro ao obter total de aulas: {str(e)}")
 
+    @staticmethod
     def get_total_alunos_com_falta():
         try:
             connection = get_connection()
