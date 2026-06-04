@@ -15,7 +15,6 @@ import os
 
 load_dotenv()
 app = Flask(__name__)
-mail = Mail(app)
 CORS(app)
 
 # configurações do JWT
@@ -32,6 +31,8 @@ app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
 
+# inicializa flask-mail (após configurar as variáveis de ambiente)
+mail = Mail(app)
 
 
 app.register_blueprint(alunos_bp)
