@@ -12,7 +12,7 @@ def criar_aula_controller():
     usuario_id = dados.get("usuario_id")
     horario_inicio = dados.get("horario_inicio")
     horario_fim = dados.get("horario_fim")
-    frequencias = dados.get("frequencias")
+    frequencias = dados.get("frequencias") or dados.get("frequencia")
     dia_semana = dados.get("dia_semana")
     usuario_logado_id = int(get_jwt_identity())
 
@@ -76,7 +76,7 @@ def atualizar_aula_controller(id):
     usuario_id = dados.get("usuario_id")
     horario_inicio = dados.get("horario_inicio")
     horario_fim = dados.get("horario_fim")
-    frequencias = dados.get("frequencias")
+    frequencias = dados.get("frequencias") or dados.get("frequencia")
     dia_semana = dados.get("dia_semana")
     usuario_logado_id = get_jwt_identity()
 
