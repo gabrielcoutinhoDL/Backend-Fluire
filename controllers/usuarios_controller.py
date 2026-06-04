@@ -169,9 +169,7 @@ def login_usuario_controller():
 def recuperar_senha_controller():
     try:
         dados = request.json
-        print("1 - JSON recebido")
         email = dados.get("email")
-        print("2 - Email:", email)
         
         
         if not email:
@@ -180,7 +178,6 @@ def recuperar_senha_controller():
             }), 400
 
         usuario = UsuarioModel.buscar_usuario_email(email)
-        print("3 - Usuario:", usuario)
         
         if not usuario:
             return jsonify({
@@ -189,17 +186,14 @@ def recuperar_senha_controller():
 
         # Gerar codigo de recuperação
         codigo_recuperacao = str(random.randint(100000, 999999))
-        print("4 - Codigo de recuperação:", codigo_recuperacao)
         
         # Enviar email com codigo de recuperação
         msg = Message("Código de Recuperação de Senha", sender="ademirjose12340@gmail.com", recipients=[email])
-        print("5 - Mensagem criada")
            
         msg.body = f"Olá {usuario['nome']},\n\nSeu código de recuperação de senha é: {codigo_recuperacao}\n\nSe você não solicitou a recuperação de senha, ignore este email."
-        print("6 - Corpo da mensagem definido")
         
         current_app.extensions['mail'].send(msg)
-        print("7 - Email enviado")
+    
         
         return jsonify({
             "mensagem": "Código de recuperação enviado para o email"

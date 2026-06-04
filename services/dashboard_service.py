@@ -3,6 +3,7 @@ from datetime import datetime
 
 
 class DashboardService:
+    
     def get_dashboard():
         try:
             total_alunos = DashboardService.get_total_alunos()
