@@ -16,7 +16,7 @@ def registrar_frequencia_service(aula_id, aluno_id, presente, data_presenca):
     if frequencia_existente:
         raise Exception("Frequência já registrada para este aluno nesta aula.")
     
-    inserir_frequencia(aula_id, aluno_id, presente, data_presenca)
+    inserir_frequencia_model(aula_id, aluno_id, presente, data_presenca)
     return {
         "mensagem": "Frequência registrada com sucesso"
     }

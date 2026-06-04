@@ -9,4 +9,4 @@ def get_dashboard_controller():
     except Exception as e:
         return jsonify({
             "erro": str(e)
-        }), 400
+        }), 400 
