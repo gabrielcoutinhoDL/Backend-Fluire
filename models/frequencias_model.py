@@ -1,7 +1,7 @@
 from config.database import get_connection
 
 # Model para gerenciar as frequências dos alunos nas aulas
-# Toda a frequencia usa o TINYINT para armazenar se o aluno está presente ou ausente, onde 1 representa presente e 0 representa ausente
+# Toda a frequencias usa o TINYINT para armazenar se o aluno está presente ou ausente, onde 1 representa presente e 0 representa ausente
 
 def buscar_todas_frequencias():
     try:
@@ -17,13 +17,33 @@ def buscar_todas_frequencias():
         return frequencias
     except Exception as e:
         raise Exception(f"Erro ao buscar todas as frequências: {str(e)}")
-    
-def buscar_frequencias_por_aula(aula_id):
+
+def buscar_frequencias_por_aula_model(aula_id):
     try:
         connection = get_connection()
         cursor = connection.cursor()
 
-        cursor.execute("SELECT * FROM frequencias WHERE aula_id = %s", (aula_id,))
+        cursor.execute(
+            "SELECT * FROM frequencias WHERE aula_id = %s",
+            (aula_id,)
+        )
+
+        frequencias = cursor.fetchall()
+
+        cursor.close()
+        connection.close()
+
+        return frequencias
+
+    except Exception as e:
+        raise Exception(f"Erro ao buscar frequências por aula: {str(e)}")
+    
+def buscar_frequencias_por_id_model(id):
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT * FROM frequencias WHERE id = %s", (id,))
         frequencias = cursor.fetchall()
 
         cursor.close()
@@ -33,29 +53,29 @@ def buscar_frequencias_por_aula(aula_id):
     except Exception as e:
         raise Exception(f"Erro ao buscar frequências por aula: {str(e)}")
     
-def verificar_frequencia_existente(aula_id, aluno_id):
+def verificar_frequencias_existente(aula_id, aluno_id):
     try:
         connection = get_connection()
         cursor = connection.cursor()
 
         cursor.execute("SELECT * FROM frequencias WHERE aula_id = %s AND aluno_id = %s", (aula_id, aluno_id))
-        frequencia = cursor.fetchone()
+        frequencias = cursor.fetchone()
 
         cursor.close()
         connection.close()
 
-        return frequencia
+        return frequencias
     except Exception as e:
         raise Exception(f"Erro ao verificar frequência existente: {str(e)}")
     
-def inserir_frequencia_model(aula_id, aluno_id, presente, data_presenca):
+def inserir_frequencias_model(aula_id, aluno_id, presente):
     try:
         connection = get_connection()
         cursor = connection.cursor()
 
         cursor.execute(
-            "INSERT INTO frequencias (aula_id, aluno_id, presente, data_presenca) VALUES (%s, %s, %s, %s)",
-            (aula_id, aluno_id, presente, data_presenca)
+            "INSERT INTO frequencias (aula_id, aluno_id, presente) VALUES (%s, %s, %s)",
+            (aula_id, aluno_id, presente)
         )
         connection.commit()
 
@@ -64,7 +84,7 @@ def inserir_frequencia_model(aula_id, aluno_id, presente, data_presenca):
     except Exception as e:
         raise Exception(f"Erro ao inserir frequência: {str(e)}")
     
-def atualizar_frequencia(id, presente):
+def atualizar_frequencias(id, presente):
     try:
         connection = get_connection()
         cursor = connection.cursor()
@@ -80,15 +100,24 @@ def atualizar_frequencia(id, presente):
     except Exception as e:
         raise Exception(f"Erro ao atualizar frequência: {str(e)}")
     
-def deletar_frequencia(id):
+def deletar_frequencias_model(id):
     try:
         connection = get_connection()
         cursor = connection.cursor()
 
-        cursor.execute("DELETE FROM frequencias WHERE id = %s", (id,))
+        cursor.execute(
+            "DELETE FROM frequencias WHERE id = %s", 
+            (id,)
+        )
+
         connection.commit()
+
+        linhas_afetadas = cursor.rowcount
 
         cursor.close()
         connection.close()
+
+        return linhas_afetadas
+
     except Exception as e:
         raise Exception(f"Erro ao deletar frequência: {str(e)}")
