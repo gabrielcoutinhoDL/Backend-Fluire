@@ -47,8 +47,8 @@ def criar_usuario_controller():
 
     except Exception as e:
         return jsonify({
-            "erro": f"Erro ao criar usuário: {str(e)}"
-        }), 500
+            "erro": str(e)
+        }), 400
 
 # Validado no postman
 def buscar_usuario_nome_controller(nome):

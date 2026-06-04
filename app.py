@@ -6,6 +6,7 @@ from extensions.jwt_config import init_jwt
 from config.settings import Config
 from routes.aulas_routes import *
 from routes.alunos_routes import *
+from routes.aula_alunos_routes import aula_alunos_bp
 from routes.frequencias_routes import frequencias_bp
 from routes.usuarios_routes import usuarios_bp
 from routes.dashboard_routes import dashboard_bp
@@ -35,6 +36,7 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
 
 app.register_blueprint(alunos_bp)
 app.register_blueprint(aulas_bp)
+app.register_blueprint(aula_alunos_bp)
 app.register_blueprint(usuarios_bp)
 app.register_blueprint(frequencias_bp)
 app.register_blueprint(dashboard_bp)
