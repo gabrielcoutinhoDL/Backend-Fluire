@@ -29,7 +29,6 @@ class AlunosModel:
         finally:
             connection.close()       
             
-                  
     @staticmethod
     def criar_aluno(nome, telefone=None, email=None, usuario_logado_id=None):
         connection = get_connection()
@@ -51,7 +50,6 @@ class AlunosModel:
 
         finally:
             connection.close()
-       
         
     @staticmethod
     def atualizar_aluno(id, nome=None, telefone=None, email=None, usuario_logado_id=None):
@@ -66,7 +64,7 @@ class AlunosModel:
 
         finally:
             connection.close()
-           
+            
     @staticmethod
     def deletar_aluno(id, usuario_logado_id=None):
         connection = get_connection()
