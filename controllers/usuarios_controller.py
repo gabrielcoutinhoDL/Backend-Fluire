@@ -193,7 +193,6 @@ def recuperar_senha_controller():
         msg.body = f"Olá {usuario['nome']},\n\nSeu código de recuperação de senha é: {codigo_recuperacao}\n\nSe você não solicitou a recuperação de senha, ignore este email."
         
         current_app.extensions['mail'].send(msg)
-    
         
         return jsonify({
             "mensagem": "Código de recuperação enviado para o email"
@@ -208,4 +207,3 @@ def recuperar_senha_controller():
             "erro": str(e),
             "tipo": type(e).__name__
         }), 500
-        

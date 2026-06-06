@@ -68,7 +68,7 @@ def buscar_todas_aulas_controller():
             "erro": str(e)
         }), 500
 
-
+@jwt_required()
 def atualizar_aula_controller(id):
     dados = request.json
 

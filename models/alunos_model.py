@@ -60,7 +60,6 @@ class AlunosModel:
                 connection.commit()
                 
                 return print("Aluno atualizado com sucesso! Linhas afetadas:", cursor.rowcount)
-
         finally:
             connection.close()
            
