@@ -4,16 +4,16 @@ from flask import request, jsonify
 
 class AulasModel:
                 
-    def criar_aula(nome, usuario_id, horario_inicio, horario_fim, frequencias, dia_semana, usuario_logado_id=None):
+    def criar_aula(nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, usuario_logado_id=None):
         connection = get_connection()
         
         try:
             with connection.cursor() as cursor:
                 sql = """
-                    INSERT INTO aulas (nome, usuario_id, horario_inicio, horario_fim, frequencias, dia_semana, created_by) 
+                    INSERT INTO aulas (nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, created_by) 
                     VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """
-                cursor.execute(sql, (nome, usuario_id, horario_inicio, horario_fim, frequencias, dia_semana, usuario_logado_id))
+                cursor.execute(sql, (nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, usuario_logado_id))
                 connection.commit()
                 return cursor.lastrowid
             
@@ -37,7 +37,7 @@ class AulasModel:
                         usuario_id,
                         horario_inicio,
                         horario_fim,
-                        frequencias,
+                        frequencia,
                         dia_semana
                     FROM aulas
                 """)
@@ -51,7 +51,8 @@ class AulasModel:
                         "usuario_id": aula["usuario_id"],
                         "horario_inicio": str(aula["horario_inicio"]),
                         "horario_fim": str(aula["horario_fim"]),
-                        "frequencias": aula["frequencias"],
+                        "frequencia": aula["frequencia"],
+                        "frequencias": aula["frequencia"],
                         "dia_semana": aula["dia_semana"]
                     }
                     for aula in aulas
@@ -61,17 +62,17 @@ class AulasModel:
             connection.close()    
             
           
-    def atualizar_aula(id, nome, usuario_id, horario_inicio, horario_fim, frequencias, dia_semana, usuario_logado_id=None):
+    def atualizar_aula(id, nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, usuario_logado_id=None):
         connection = get_connection()
 
         try:
             with connection.cursor() as cursor:
                 sql = """
                     UPDATE aulas 
-                    SET nome = %s, usuario_id = %s, horario_inicio = %s, horario_fim = %s, frequencias = %s, dia_semana = %s, updated_by = %s
+                    SET nome = %s, usuario_id = %s, horario_inicio = %s, horario_fim = %s, frequencia = %s, dia_semana = %s, updated_by = %s
                     WHERE id = %s
                 """
-                cursor.execute(sql, (nome, usuario_id, horario_inicio, horario_fim, frequencias, dia_semana, usuario_logado_id, id))
+                cursor.execute(sql, (nome, usuario_id, horario_inicio, horario_fim, frequencia, dia_semana, usuario_logado_id, id))
                 if cursor.rowcount == 0:
                     raise Exception("Aula não encontrada")
                 connection.commit()
