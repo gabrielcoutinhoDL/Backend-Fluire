@@ -12,7 +12,8 @@ def criar_usuario_controller():
     nome = dados.get("nome")
     email = dados.get("email")
     senha = dados.get("senha")
-    
+
+    # validações
     if not nome:
         return jsonify({
             "erro": "Nome obrigatório"
@@ -28,7 +29,14 @@ def criar_usuario_controller():
             "erro": "Senha obrigatória"
         }), 400
 
-    senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt())
+    # Verificar se email já existe
+    usuario_existente = UsuarioModel.buscar_usuario_email(email)
+    if usuario_existente:
+        return jsonify({
+            "erro": "Email já cadastrado"
+        }), 400
+
+    senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
     try:
         usuario_id = UsuarioModel.criar_usuario(nome, email, senha_hash)
@@ -36,6 +44,7 @@ def criar_usuario_controller():
             "mensagem": "Usuário criado com sucesso",
             "id": usuario_id
         }), 201
+
     except Exception as e:
         return jsonify({
             "erro": str(e)
