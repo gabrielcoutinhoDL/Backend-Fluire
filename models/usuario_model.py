@@ -1,6 +1,7 @@
 from config.database import get_connection
 import bcrypt
 from flask_jwt_extended import create_access_token
+from datetime import datetime, timedelta
 
 class UsuarioModel:
 
@@ -152,5 +153,68 @@ class UsuarioModel:
                     "email": usuario["email"]
                 }
 
+        finally:
+            connection.close()
+
+    @staticmethod
+    def salvar_codigo_recuperacao(email, codigo):
+        connection = get_connection()
+        try:
+            with connection.cursor() as cursor:
+                expiracao = datetime.now() + timedelta(minutes=15)
+                cursor.execute(
+                    "UPDATE usuarios SET codigo_recuperacao = %s, codigo_expiracao = %s WHERE email = %s",
+                    (codigo, expiracao, email)
+                )
+                connection.commit()
+                return cursor.rowcount > 0
+        finally:
+            connection.close()
+
+    @staticmethod
+    def validar_codigo_recuperacao(email, codigo):
+        connection = get_connection()
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT id, nome, email, codigo_recuperacao, codigo_expiracao FROM usuarios WHERE email = %s",
+                    (email,)
+                )
+                usuario = cursor.fetchone()
+                
+                if not usuario:
+                    return None
+                
+                codigo_salvo = usuario.get("codigo_recuperacao")
+                expiracao = usuario.get("codigo_expiracao")
+                
+                if not codigo_salvo or not expiracao:
+                    return None
+                
+                if codigo_salvo != codigo:
+                    return None
+                
+                if datetime.now() > expiracao:
+                    return None
+                
+                return {
+                    "id": usuario["id"],
+                    "nome": usuario["nome"],
+                    "email": usuario["email"]
+                }
+        finally:
+            connection.close()
+
+    @staticmethod
+    def alterar_senha(usuario_id, nova_senha_hash):
+        connection = get_connection()
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "UPDATE usuarios SET senha = %s, codigo_recuperacao = NULL, codigo_expiracao = NULL WHERE id = %s",
+                    (nova_senha_hash, usuario_id)
+                )
+                connection.commit()
+                return cursor.rowcount > 0
         finally:
             connection.close()
