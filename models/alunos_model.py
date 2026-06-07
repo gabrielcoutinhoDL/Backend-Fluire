@@ -29,7 +29,6 @@ class AlunosModel:
         finally:
             connection.close()       
             
-                  
     @staticmethod
     def criar_aluno(nome, telefone=None, email=None, usuario_logado_id=None):
         connection = get_connection()
@@ -51,7 +50,6 @@ class AlunosModel:
 
         finally:
             connection.close()
-       
         
     @staticmethod
     def atualizar_aluno(id, nome=None, telefone=None, email=None, usuario_logado_id=None):
@@ -62,11 +60,11 @@ class AlunosModel:
                 sql = "UPDATE alunos SET nome = %s, telefone = %s, email = %s, updated_by = %s WHERE id = %s"
                 cursor.execute(sql, (nome, telefone, email, usuario_logado_id, id))
                 connection.commit()
-                return cursor.rowcount > 0
-
+                
+                return print("Aluno atualizado com sucesso! Linhas afetadas:", cursor.rowcount)
         finally:
             connection.close()
-           
+            
     @staticmethod
     def deletar_aluno(id, usuario_logado_id=None):
         connection = get_connection()

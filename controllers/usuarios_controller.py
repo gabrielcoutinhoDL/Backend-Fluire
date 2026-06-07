@@ -47,8 +47,8 @@ def criar_usuario_controller():
 
     except Exception as e:
         return jsonify({
-            "erro": f"Erro ao criar usuário: {str(e)}"
-        }), 500
+            "erro": str(e)
+        }), 400
 
 # Validado no postman
 def buscar_usuario_nome_controller(nome):
@@ -178,9 +178,7 @@ def login_usuario_controller():
 def recuperar_senha_controller():
     try:
         dados = request.json
-        print("1 - JSON recebido")
         email = dados.get("email")
-        print("2 - Email:", email)
         
         
         if not email:
@@ -189,7 +187,6 @@ def recuperar_senha_controller():
             }), 400
 
         usuario = UsuarioModel.buscar_usuario_email(email)
-        print("3 - Usuario:", usuario)
         
         if not usuario:
             return jsonify({
@@ -198,7 +195,6 @@ def recuperar_senha_controller():
 
         # Gerar codigo de recuperação
         codigo_recuperacao = str(random.randint(100000, 999999))
-        print("4 - Codigo de recuperação:", codigo_recuperacao)
         
         # Salvar codigo no banco de dados
         UsuarioModel.salvar_codigo_recuperacao(email, codigo_recuperacao)
@@ -206,6 +202,7 @@ def recuperar_senha_controller():
         
         # Enviar email com codigo de recuperação
         msg = Message("Código de Recuperação de Senha", sender="ademirjose12340@gmail.com", recipients=[email])
+
         print("6 - Mensagem criada")
            
         msg.body = f"Olá {usuario['nome']},\n\nSeu código de recuperação de senha é: {codigo_recuperacao}\n\nEste código expira em 15 minutos.\n\nSe você não solicitou a recuperação de senha, ignore este email."
@@ -213,6 +210,12 @@ def recuperar_senha_controller():
         
         current_app.extensions['mail'].send(msg)
         print("8 - Email enviado")
+
+           
+        msg.body = f"Olá {usuario['nome']},\n\nSeu código de recuperação de senha é: {codigo_recuperacao}\n\nSe você não solicitou a recuperação de senha, ignore este email."
+        
+        current_app.extensions['mail'].send(msg)
+
         
         return jsonify({
             "mensagem": "Código de recuperação enviado para o email"
@@ -226,6 +229,7 @@ def recuperar_senha_controller():
         return jsonify({
             "erro": str(e),
             "tipo": type(e).__name__
+
         }), 500
 
 def validar_codigo_alterar_senha_controller():
@@ -265,5 +269,7 @@ def validar_codigo_alterar_senha_controller():
         return jsonify({
             "erro": str(e),
             "tipo": type(e).__name__
+        }), 500
+
         }), 500
 
