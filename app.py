@@ -31,7 +31,7 @@ app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
 
-# inicializa flask-mail (após configurar as variáveis de ambiente)
+# inicializa flask-mail 
 mail = Mail(app)
 
 

@@ -1,3 +1,4 @@
+
 from config.database import get_connection
 
 # Model para gerenciar as frequências dos alunos nas aulas
@@ -18,6 +19,7 @@ def buscar_todas_frequencias():
     except Exception as e:
         raise Exception(f"Erro ao buscar todas as frequências: {str(e)}")
 
+    
 def buscar_frequencias_por_aula_model(aula_id):
     try:
         connection = get_connection()
@@ -38,6 +40,7 @@ def buscar_frequencias_por_aula_model(aula_id):
     except Exception as e:
         raise Exception(f"Erro ao buscar frequências por aula: {str(e)}")
     
+    
 def buscar_frequencias_por_id_model(id):
     try:
         connection = get_connection()
@@ -52,6 +55,7 @@ def buscar_frequencias_por_id_model(id):
         return frequencias
     except Exception as e:
         raise Exception(f"Erro ao buscar frequências por aula: {str(e)}")
+    
     
 def verificar_frequencias_existente(aula_id, aluno_id):
     try:
@@ -68,14 +72,17 @@ def verificar_frequencias_existente(aula_id, aluno_id):
     except Exception as e:
         raise Exception(f"Erro ao verificar frequência existente: {str(e)}")
     
+    
 def inserir_frequencias_model(aula_id, aluno_id, presente):
+    from datetime import datetime
     try:
         connection = get_connection()
         cursor = connection.cursor()
-
+        data_atual = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
         cursor.execute(
-            "INSERT INTO frequencias (aula_id, aluno_id, presente) VALUES (%s, %s, %s)",
-            (aula_id, aluno_id, presente)
+            "INSERT INTO frequencias (aula_id, aluno_id, presente, data_presenca) VALUES (%s, %s, %s, %s)",
+            (aula_id, aluno_id, presente, data_atual)
         )
         connection.commit()
 
@@ -83,6 +90,7 @@ def inserir_frequencias_model(aula_id, aluno_id, presente):
         connection.close()
     except Exception as e:
         raise Exception(f"Erro ao inserir frequência: {str(e)}")
+    
     
 def atualizar_frequencias(id, presente):
     try:

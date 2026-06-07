@@ -180,7 +180,6 @@ def recuperar_senha_controller():
         dados = request.json
         email = dados.get("email")
         
-        
         if not email:
             return jsonify({
                 "erro": "Email é obrigatório"
@@ -213,7 +212,7 @@ def recuperar_senha_controller():
 
            
         msg.body = f"Olá {usuario['nome']},\n\nSeu código de recuperação de senha é: {codigo_recuperacao}\n\nSe você não solicitou a recuperação de senha, ignore este email."
-        
+
         current_app.extensions['mail'].send(msg)
 
         
@@ -270,6 +269,3 @@ def validar_codigo_alterar_senha_controller():
             "erro": str(e),
             "tipo": type(e).__name__
         }), 500
-
-        }), 500
-
