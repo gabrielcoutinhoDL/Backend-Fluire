@@ -36,3 +36,7 @@ def login_usuario():
 @usuarios_bp.route("/recuperar-senha", methods=["POST"])
 def recuperar_senha():
     return recuperar_senha_controller()
+
+@usuarios_bp.route("/validar-codigo-alterar-senha", methods=["POST"])
+def validar_codigo_alterar_senha():
+    return validar_codigo_alterar_senha_controller()

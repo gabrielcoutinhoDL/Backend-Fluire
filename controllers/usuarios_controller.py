@@ -200,15 +200,19 @@ def recuperar_senha_controller():
         codigo_recuperacao = str(random.randint(100000, 999999))
         print("4 - Codigo de recuperação:", codigo_recuperacao)
         
+        # Salvar codigo no banco de dados
+        UsuarioModel.salvar_codigo_recuperacao(email, codigo_recuperacao)
+        print("5 - Codigo salvo no banco")
+        
         # Enviar email com codigo de recuperação
         msg = Message("Código de Recuperação de Senha", sender="ademirjose12340@gmail.com", recipients=[email])
-        print("5 - Mensagem criada")
+        print("6 - Mensagem criada")
            
-        msg.body = f"Olá {usuario['nome']},\n\nSeu código de recuperação de senha é: {codigo_recuperacao}\n\nSe você não solicitou a recuperação de senha, ignore este email."
-        print("6 - Corpo da mensagem definido")
+        msg.body = f"Olá {usuario['nome']},\n\nSeu código de recuperação de senha é: {codigo_recuperacao}\n\nEste código expira em 15 minutos.\n\nSe você não solicitou a recuperação de senha, ignore este email."
+        print("7 - Corpo da mensagem definido")
         
         current_app.extensions['mail'].send(msg)
-        print("7 - Email enviado")
+        print("8 - Email enviado")
         
         return jsonify({
             "mensagem": "Código de recuperação enviado para o email"
@@ -223,4 +227,43 @@ def recuperar_senha_controller():
             "erro": str(e),
             "tipo": type(e).__name__
         }), 500
-        
+
+def validar_codigo_alterar_senha_controller():
+    try:
+        dados = request.json
+        email = dados.get("email")
+        codigo = dados.get("codigo")
+        nova_senha = dados.get("nova_senha")
+
+        if not email or not codigo or not nova_senha:
+            return jsonify({
+                "erro": "Email, código e nova senha são obrigatórios"
+            }), 400
+
+        usuario = UsuarioModel.validar_codigo_recuperacao(email, codigo)
+
+        if not usuario:
+            return jsonify({
+                "erro": "Código inválido ou expirado"
+            }), 400
+
+        senha_hash = bcrypt.hashpw(nova_senha.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        sucesso = UsuarioModel.alterar_senha(usuario["id"], senha_hash)
+
+        if sucesso:
+            return jsonify({
+                "mensagem": "Senha alterada com sucesso"
+            }), 200
+        else:
+            return jsonify({
+                "erro": "Erro ao alterar senha"
+            }), 500
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            "erro": str(e),
+            "tipo": type(e).__name__
+        }), 500
+
