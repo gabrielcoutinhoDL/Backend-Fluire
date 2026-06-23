@@ -61,7 +61,7 @@ class AlunosModel:
                 cursor.execute(sql, (nome, telefone, email, usuario_logado_id, id))
                 connection.commit()
                 
-                return print("Aluno atualizado com sucesso! Linhas afetadas:", cursor.rowcount)
+                return cursor.rowcount > 0
         finally:
             connection.close()
             

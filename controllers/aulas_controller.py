@@ -67,6 +67,22 @@ def buscar_todas_aulas_controller():
         return jsonify({
             "erro": str(e)
         }), 500
+        
+def buscar_aula_por_id_controller(id):
+    try:
+        aula = AulasModel.buscar_aula_por_id(id)
+
+        if not aula:
+            return jsonify({
+                "erro": "Aula não encontrada"
+            }), 404
+
+        return jsonify(aula), 200
+
+    except Exception as e:
+        return jsonify({
+            "erro": str(e)
+        }), 500
 
 @jwt_required()
 def atualizar_aula_controller(id):
@@ -104,4 +120,3 @@ def deletar_aula_controller(id):
         return jsonify({
             "erro": str(e)
         }), 500
-    

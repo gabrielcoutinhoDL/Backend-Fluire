@@ -12,6 +12,10 @@ def criar_aula():
 def buscar_todas_aulas():
     return buscar_todas_aulas_controller()
 
+@aulas_bp.route("/aulas/<int:id>", methods=["GET"])
+def buscar_aula_por_id(id):
+    return buscar_aula_por_id_controller(id)
+
 @aulas_bp.route("/aulas/<int:id>", methods=["PUT"])
 def atualizar(id):
     return atualizar_aula_controller(id)
