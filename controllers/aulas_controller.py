@@ -94,6 +94,7 @@ def atualizar_aula_controller(id):
     }), 200
     
     
+@jwt_required()
 def deletar_aula_controller(id):
     try:
         AulasModel.deletar_aula(id)
