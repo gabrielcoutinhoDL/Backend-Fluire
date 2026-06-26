@@ -202,14 +202,13 @@ def recuperar_senha_controller():
         
         # Salvar codigo no banco de dados
         UsuarioModel.salvar_codigo_recuperacao(email, codigo_recuperacao)
-        print("5 - Codigo salvo no banco")
         
         # Enviar email com codigo de recuperação
         msg = Message("Código de Recuperação de Senha", sender="ademirjose12340@gmail.com", recipients=[email])
+
         print("6 - Mensagem criada")
            
         msg.body = f"Olá {usuario['nome']},\n\nSeu código de recuperação de senha é: {codigo_recuperacao}\n\nEste código expira em 15 minutos.\n\nSe você não solicitou a recuperação de senha, ignore este email."
-        print("7 - Corpo da mensagem definido")
         
         current_app.extensions['mail'].send(msg)
         print("8 - Email enviado")
