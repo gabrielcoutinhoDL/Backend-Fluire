@@ -1,4 +1,5 @@
 from flask import request, jsonify
+from flask_jwt_extended import jwt_required
 from services.frequencias_service import *
 
 
@@ -23,11 +24,12 @@ def buscar_frequencias_aula_controller(aula_id):
         return jsonify({
             "erro": str(e)
         }), 400
-        
+
 def validar_presente(presente):
     if presente not in [0, 1]:
         raise Exception("Valor de 'presente' deve ser 0 (ausente) ou 1 (presente).")
-        
+
+@jwt_required()
 def registrar_frequencias_controller():
     dados = request.json
 
@@ -59,8 +61,9 @@ def registrar_frequencias_controller():
         return jsonify({
             "erro": str(e)
         }), 400
-    
-       
+
+
+@jwt_required()
 def atualizar_frequencias_controller(id):
     dados = request.json
 
@@ -76,8 +79,9 @@ def atualizar_frequencias_controller(id):
         return jsonify({
             "erro": str(e)
         }), 400
-    
-    
+
+
+@jwt_required()
 def deletar_frequencias_controller(id):
     try:
         resultado = deletar_frequencias_service(id)
