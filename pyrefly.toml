@@ -1,0 +1,13 @@
+# Configuração do Pyrefly para backend-fluire
+python_interpreter = "venv/Scripts/python.exe"
+
+# Trata imports sem stubs de tipo como Any (evita falsos positivos)
+use_untyped_imports = true
+
+# Ignora arquivos que não fazem parte do projeto
+project_excludes = [
+    "venv/**",
+    "**/__pycache__/**",
+    "**/*.pyc",
+    ".vscode/**",
+]

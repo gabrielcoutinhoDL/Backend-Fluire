@@ -1,15 +1,15 @@
-import pymysql
-from pymysql.cursors import DictCursor
-from dotenv import load_dotenv
+import psycopg2
+import psycopg2.extras
 import os
+from pathlib import Path
+from typing import Any
+from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parent.parent / '.env')
 
-def get_connection():
-    return pymysql.connect(
-        host=os.getenv('DB_HOST'),
-        user=os.getenv('DB_USER'),
-        password=os.getenv('DB_PASSWORD'),
-        database=os.getenv('DB_NAME'),
-        cursorclass=DictCursor
-    ) 
+
+def get_connection() -> Any:
+    return psycopg2.connect(
+        os.getenv('DATABASE_URL'),
+        cursor_factory=psycopg2.extras.RealDictCursor
+    )
