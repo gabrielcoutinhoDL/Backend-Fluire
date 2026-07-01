@@ -1,7 +1,7 @@
 import json
 import logging
 
-from services.n8n_service import enviar_evento_n8n
+from services.n8n_services import enviar_evento_n8n
 from models.notificacoes_model import NotificacoesModel
 
 logger = logging.getLogger(__name__)
